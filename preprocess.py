@@ -12,7 +12,7 @@ def get_data():
     X = df.values[:,1:8]
     y_x= df.values[:,8]
     y_y= df.values[:,9]
-    y=process_data(y_x,y_y,3,3)
+    y=df.values[:,8:10]
 
 def process_data(x,y,m,n):
     x_scale= 16/m
