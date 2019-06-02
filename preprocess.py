@@ -14,6 +14,14 @@ def get_data():
     y_y= df.values[:,9]
     y=df.values[:,8:10]
 
+# def get_data():
+#     global X,y,y_x,y_y
+#     df=pd.read_csv('data1.csv',sep=',', lineterminator='\n')
+#     X = df.values[:,0:6]
+#     # y_x= df.values[:,8]
+#     # y_y= df.values[:,9]
+#     y=df.values[:,6:8]
+
 def process_data(x,y,m,n):
     x_scale= 16/m
     y_scale= 22/n

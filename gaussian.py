@@ -33,6 +33,13 @@ from sklearn.gaussian_process.kernels import (RBF, Matern, RationalQuadratic,
                                               ConstantKernel)
 from sklearn.model_selection import GridSearchCV
 import math
+from sklearn.metrics import make_scorer
+import numpy as np
+
+def distance(y_true, y_pred):
+    return np.average(np.apply_along_axis(np.linalg.norm,1,y_true-y_pred))
+
+score = make_scorer(distance, greater_is_better=False)
 
 preprocess.get_data()
 X = preprocess.X
@@ -59,13 +66,10 @@ param_grid = {"kernel": kernel_list,
 
 gp = GaussianProcessRegressor()
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=50)
-grid_search = GridSearchCV(gp, param_grid=param_grid,cv=5,scoring='r2')
+grid_search = GridSearchCV(gp, param_grid=param_grid,cv=5,scoring=score)
 grid_search.fit(X_train,y_train)
 y_pred = grid_search.predict(X_test)
-err=0
-for i, p in enumerate(y_pred):
-    err+= math.sqrt((p[0]-y_test[i][0])**2+(p[1]-y_test[i][1])**2)
+print np.average(np.apply_along_axis(np.linalg.norm,1,y_test-y_pred))
 print grid_search.best_estimator_
 print grid_search.cv_results_['mean_test_score']
-print err/len(y_pred)
 

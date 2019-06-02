@@ -1,4 +1,5 @@
 import preprocess
+import numpy as np
 from sklearn.svm import SVR
 from sklearn.model_selection import validation_curve
 
@@ -6,8 +7,6 @@ from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
-
 
 from sklearn import ensemble
 from sklearn import datasets
@@ -30,6 +29,7 @@ import xgboost as xgb
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 import math
+from sklearn.multioutput import MultiOutputRegressor
 
 kernel = C(1.0, (1e-4, 1e4)) * RBF(10, (1e-2, 1e2))
 clfs=[
@@ -37,31 +37,29 @@ clfs=[
     # linear_model.Ridge(alpha=0.05, max_iter=1000),
     # linear_model.SGDRegressor(alpha=0.1,penalty='l1'),
     # linear_model.SGDRegressor(alpha=0.1,penalty='l2'),
-    # svm.SVR(kernel='linear', C=0.8,epsilon=0.7),
-    # AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),n_estimators=1000,learning_rate=0.1),
-    RandomForestRegressor(n_estimators =300,max_depth=20),
+    svm.SVR(kernel='rbf', C=2),
+    AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),n_estimators=1000,learning_rate=0.1),
+    RandomForestRegressor(n_estimators =400,max_depth=20),
     #GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=8),
-    # GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,max_depth=1, random_state=64, loss='ls'),
+    GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,max_depth=1, random_state=64, loss='ls'),
     # xgb.XGBRegressor(),
-    # MLPRegressor(learning_rate='adaptive')
+    MLPRegressor(learning_rate='adaptive')
     ]
 
 def compare_process(X,y):
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=50)
-    min_max_scaler = preprocessing.StandardScaler()#StandardScaler
-    X_train = min_max_scaler.fit_transform(X_train)
-    X_test = min_max_scaler.fit_transform(X_test)
+    # min_max_scaler = preprocessing.StandardScaler()#StandardScaler
+    # X_train = min_max_scaler.fit_transform(X_train)
+    # X_test = min_max_scaler.fit_transform(X_test)
     res=[]
     r2i=[]
     for c in clfs:
-        c.fit(X_train,y_train)
-        y_pred = c.predict(X_test)
+        mt = MultiOutputRegressor(c)
+        mt.fit(X_train,y_train)
+        y_pred = mt.predict(X_test)
         # res.append(mean_absolute_error(y_test, y_pred))
-        print y_pred
         err=0
-        for i, p in enumerate(y_pred):
-            err+= math.sqrt((p[0]-y_test[i][0])**2+(p[1]-y_test[i][1])**2)
-        res.append(err/len(y_pred))
+        res.append(np.average(np.apply_along_axis(np.linalg.norm,1,y_test-y_pred)))
     print res
     # print r2i
 
