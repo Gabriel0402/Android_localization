@@ -30,8 +30,11 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 import math
 from sklearn.multioutput import MultiOutputRegressor
+from sklearn.gaussian_process.kernels import (RBF, Matern, RationalQuadratic,
+                                              ExpSineSquared, DotProduct,
+                                              ConstantKernel)
 
-kernel = C(1.0, (1e-4, 1e4)) * RBF(10, (1e-2, 1e2))
+kernel = C(1.0, (1e-4, 1e4)) *RationalQuadratic(length_scale=1.0, alpha=0.1)
 clfs=[
     # linear_model.Lasso(alpha=0.01, max_iter=1000),
     # linear_model.Ridge(alpha=0.05, max_iter=1000),
@@ -40,9 +43,9 @@ clfs=[
     svm.SVR(kernel='rbf', C=2),
     AdaBoostRegressor(DecisionTreeRegressor(max_depth=4),n_estimators=1000,learning_rate=0.1),
     RandomForestRegressor(n_estimators =400,max_depth=20),
-    #GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=8),
+    GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=8),
     GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,max_depth=1, random_state=64, loss='ls'),
-    # xgb.XGBRegressor(),
+    xgb.XGBRegressor(n_estimators =500, max_depth=10, learning_rate=0.05),
     MLPRegressor(learning_rate='adaptive')
     ]
 
@@ -66,4 +69,9 @@ def compare_process(X,y):
 preprocess.get_data()
 X = preprocess.X
 y = preprocess.y
+idx=np.random.randint(X.shape[0], size=400)
+X=X[idx,:]
+y=y[idx,:]
+# print X
+# print y
 compare_process(X,y)

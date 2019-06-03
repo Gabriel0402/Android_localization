@@ -53,11 +53,11 @@ ker_expsine = ConstantKernel(32.9, (1e-4, 1e4)) * RBF(1.0, (1e-2, 1e2))
 
 # ker_expsine = ConstantKernel(1.0, (1e-4, 1e4)) * ExpSineSquared(1.0, 5.0, periodicity_bounds=(1e-2, 1e1))
 
-kernel_list = [ ConstantKernel(1.0, (1e-4, 1e4)) * RBF(1.0, (1e-2, 1e2)),
+kernel_list = [
                 # ConstantKernel(1.0, (1e-4, 1e4)) * ExpSineSquared(1.0, 5.0, periodicity_bounds=(1e-2, 1e1)),
-                1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-1, 10.0)),
-                1.0 * RationalQuadratic(length_scale=1.0, alpha=0.1),
-                1.0 * Matern(length_scale=1.0, length_scale_bounds=(1e-1, 10.0),nu=1.5)]
+                ConstantKernel(1.0, (1e-4, 1e4))  * RBF(length_scale=1.0, length_scale_bounds=(1e-1, 10.0)),
+                ConstantKernel(1.0, (1e-4, 1e4))  * RationalQuadratic(length_scale=1.0, alpha=0.1),
+                ConstantKernel(1.0, (1e-4, 1e4))  * Matern(length_scale=1.0, length_scale_bounds=(1e-1, 10.0),nu=1.5)]
 
 param_grid = {"kernel": kernel_list,
               "optimizer": ["fmin_l_bfgs_b"],
@@ -66,10 +66,10 @@ param_grid = {"kernel": kernel_list,
 
 gp = GaussianProcessRegressor()
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=50)
-grid_search = GridSearchCV(gp, param_grid=param_grid,cv=5,scoring=score)
-grid_search.fit(X_train,y_train)
-y_pred = grid_search.predict(X_test)
-print np.average(np.apply_along_axis(np.linalg.norm,1,y_test-y_pred))
-print grid_search.best_estimator_
-print grid_search.cv_results_['mean_test_score']
+
+for k in kernel_list:
+    gpk = GaussianProcessRegressor(kernel=k,alpha=1e-8)
+    gpk.fit(X_train,y_train)
+    y_pred=gpk.predict(X_test)
+    print np.average(np.apply_along_axis(np.linalg.norm,1,y_test-y_pred))
 
