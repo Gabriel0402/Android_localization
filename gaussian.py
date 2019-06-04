@@ -70,6 +70,7 @@ X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_sta
 for k in kernel_list:
     gpk = GaussianProcessRegressor(kernel=k,alpha=1e-8)
     gpk.fit(X_train,y_train)
-    y_pred=gpk.predict(X_test)
+    y_pred, sigma=gpk.predict(X_test,return_std=True)
     print np.average(np.apply_along_axis(np.linalg.norm,1,y_test-y_pred))
+    print 1.96*np.average(sigma)
 
