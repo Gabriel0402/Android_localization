@@ -65,18 +65,34 @@ def compare_process(X,y,res):
     print res
     # print r2i
 
-size = [400,500,600,700,800,900,999]
+# size = [400,500,600,700,800,900,999]
+# res={'svr':[],'ada':[],'rf':[],'nn':[],'xgb':[],'gpr':[]}
+# preprocess.get_data()
+# X = preprocess.X
+# y = preprocess.y
+# for s in size:
+#     idx=np.random.randint(X.shape[0], size=s)
+#     X=X[idx,:]
+#     y=y[idx,:]
+#     # print X
+#     # print y
+#     compare_process(X,y,res)
+# df=pd.DataFrame(res)
+# df.to_csv('t2.csv')
+# lines=df.plot.line()
+# plt.show()
+
+size = [4,5,6,7]
 res={'svr':[],'ada':[],'rf':[],'nn':[],'xgb':[],'gpr':[]}
 preprocess.get_data()
 X = preprocess.X
 y = preprocess.y
 for s in size:
-    idx=np.random.randint(X.shape[0], size=s)
-    X=X[idx,:]
-    y=y[idx,:]
+    x=X[:,0:s]
     # print X
     # print y
-    compare_process(X,y,res)
-df=pd.DataFrame(res,index=size)
+    compare_process(x,y,res)
+df=pd.DataFrame(res)
+df.to_csv('feature.csv')
 lines=df.plot.line()
 plt.show()
