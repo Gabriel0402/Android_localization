@@ -38,9 +38,9 @@ test_scores_std = np.std(test_scores, axis=1)
 
 
 plt.figure()
-gs = gridspec.GridSpec(1,2, height_ratios=[1])
+gs = gridspec.GridSpec(2,2, height_ratios=[1,1])
 plt.subplot(gs[0])
-plt.xlabel(r"$\gamma$")
+plt.xlabel(r"$\gamma$ of linear kernel")
 plt.ylabel("negative distance")
 plt.ylim(-10.0, -2.0)
 lw = 2
@@ -66,7 +66,7 @@ test_scores_mean = np.mean(test_scores, axis=1)
 test_scores_std = np.std(test_scores, axis=1)
 
 plt.subplot(gs[1])
-plt.xlabel(r"$C$")
+plt.xlabel(r"$C$ of linear kernel")
 plt.ylabel("negative distance")
 plt.ylim(-10.0, 0.0)
 lw = 2
@@ -81,5 +81,61 @@ plt.fill_between(param_range, test_scores_mean - test_scores_std,
                  test_scores_mean + test_scores_std, alpha=0.2,
                  color="navy", lw=lw)
 plt.legend(loc="best")
+
+svr_linear = MultiOutputRegressor(SVR(kernel='linear'))
+score = make_scorer(distance, greater_is_better=False)
+#gamma
+param_range = np.logspace(-6, -1, 5)
+train_scores, test_scores = validation_curve(
+    svr_linear, X, y, param_name="estimator__gamma", param_range=param_range,
+    cv=5, scoring=score, n_jobs=1)
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+
+plt.subplot(gs[2])
+plt.xlabel(r"$\gamma$ of linear kernel")
+plt.ylabel("negative distance")
+plt.ylim(-10.0, -2.0)
+lw = 2
+plt.semilogx(param_range, train_scores_mean, label="Training score",
+             color="darkorange", lw=lw)
+plt.fill_between(param_range, train_scores_mean - train_scores_std,
+                 train_scores_mean + train_scores_std, alpha=0.2,
+                 color="darkorange", lw=lw)
+plt.semilogx(param_range, test_scores_mean, label="Cross-validation score",
+             color="navy", lw=lw)
+plt.fill_between(param_range, test_scores_mean - test_scores_std,
+                 test_scores_mean + test_scores_std, alpha=0.2,
+                 color="navy", lw=lw)
+plt.legend(loc="best")
+#C
+param_range = np.linspace(1,10, 100)
+train_scores, test_scores = validation_curve(
+    svr_rbf, X, y, param_name="estimator__C", param_range=param_range,
+    cv=5, scoring=score, n_jobs=1)
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+
+plt.subplot(gs[3])
+plt.xlabel(r"$C$ of linear kernel")
+plt.ylabel("negative distance")
+plt.ylim(-10.0, 0.0)
+lw = 2
+plt.semilogx(param_range, train_scores_mean, label="Training score",
+             color="darkorange", lw=lw)
+plt.fill_between(param_range, train_scores_mean - train_scores_std,
+                 train_scores_mean + train_scores_std, alpha=0.2,
+                 color="darkorange", lw=lw)
+plt.semilogx(param_range, test_scores_mean, label="Cross-validation score",
+             color="navy", lw=lw)
+plt.fill_between(param_range, test_scores_mean - test_scores_std,
+                 test_scores_mean + test_scores_std, alpha=0.2,
+                 color="navy", lw=lw)
+plt.legend(loc="best")
+
 
 plt.show()

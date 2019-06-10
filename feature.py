@@ -44,7 +44,7 @@ def distance(y_true, y_pred):
 
 score = make_scorer(distance, greater_is_better=False)
 gp=MultiOutputRegressor(xgb.XGBRegressor(n_estimators =500, max_depth=10, learning_rate=0.05))
-size=[4,5,6,7]
+size=[1,2,3,4,5,6,7]
 preprocess.get_data()
 X = preprocess.X
 y = preprocess.y

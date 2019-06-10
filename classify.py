@@ -48,7 +48,7 @@ clfs={
     'gpr':GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=8),
     #GradientBoostingRegressor(n_estimators=100, learning_rate=0.1,max_depth=1, random_state=64, loss='ls'),
     'xgb':xgb.XGBRegressor(n_estimators =500, max_depth=10, learning_rate=0.05),
-    'nn':MLPRegressor(learning_rate='adaptive')
+    # 'nn':MLPRegressor(learning_rate='adaptive')
 }
 
 def compare_process(X,y,res):
@@ -65,34 +65,34 @@ def compare_process(X,y,res):
     print res
     # print r2i
 
-# size = [400,500,600,700,800,900,999]
-# res={'svr':[],'ada':[],'rf':[],'nn':[],'xgb':[],'gpr':[]}
-# preprocess.get_data()
-# X = preprocess.X
-# y = preprocess.y
-# for s in size:
-#     idx=np.random.randint(X.shape[0], size=s)
-#     X=X[idx,:]
-#     y=y[idx,:]
-#     # print X
-#     # print y
-#     compare_process(X,y,res)
-# df=pd.DataFrame(res)
-# df.to_csv('t2.csv')
-# lines=df.plot.line()
-# plt.show()
-
-size = [4,5,6,7]
-res={'svr':[],'ada':[],'rf':[],'nn':[],'xgb':[],'gpr':[]}
+size = [400,500,600,700,800,900,999]
+res={'svr':[],'ada':[],'rf':[],'xgb':[],'gpr':[]}
 preprocess.get_data()
 X = preprocess.X
-y = preprocess.y
+Y = preprocess.y
 for s in size:
-    x=X[:,0:s]
+    idx=np.random.randint(X.shape[0], size=s)
+    x=X[idx,:]
+    y=Y[idx,:]
     # print X
     # print y
     compare_process(x,y,res)
 df=pd.DataFrame(res)
-df.to_csv('feature.csv')
+df.to_csv('size_2.csv')
 lines=df.plot.line()
 plt.show()
+
+# size = [1,2,3,4,5,6,7]
+# res={'svr':[],'ada':[],'rf':[],'xgb':[],'gpr':[]}
+# preprocess.get_data()
+# X = preprocess.X
+# y = preprocess.y
+# for s in size:
+#     x=X[:,0:s]
+#     # print X
+#     # print y
+#     compare_process(x,y,res)
+# df=pd.DataFrame(res)
+# df.to_csv('feature_2.csv')
+# lines=df.plot.line()
+# plt.show()
